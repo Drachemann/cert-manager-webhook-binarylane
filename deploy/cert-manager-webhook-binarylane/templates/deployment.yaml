@@ -29,16 +29,23 @@ spec:
               value: {{ .Values.groupName }}
           ports:
             - containerPort: 4443
+              name: https
+              protocol: TCP
+            - containerPort: 6080
+              name: healthcheck
+              protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           livenessProbe:
             httpGet:
               path: /healthz
-              port: 6080
+              port: healthcheck
+              scheme: HTTP
           readinessProbe:
             httpGet:
               path: /healthz
-              port: 6080
+              port: healthcheck
+              scheme: HTTP
           volumeMounts:
             - name: tls
               mountPath: /tls
