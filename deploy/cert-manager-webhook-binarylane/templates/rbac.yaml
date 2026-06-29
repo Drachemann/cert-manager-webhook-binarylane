@@ -38,3 +38,18 @@ subjects:
   - kind: ServiceAccount
     name: {{ include "cert-manager-webhook-binarylane.fullname" . }}
     namespace: {{ .Release.Namespace }}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "cert-manager-webhook-binarylane.fullname" . }}:extension-apiserver-authentication-reader
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: extension-apiserver-authentication-reader
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "cert-manager-webhook-binarylane.fullname" . }}
+    namespace: {{ .Release.Namespace }}
