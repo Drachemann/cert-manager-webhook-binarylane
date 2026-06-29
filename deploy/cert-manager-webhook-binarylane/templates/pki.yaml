@@ -1,0 +1,47 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ include "cert-manager-webhook-binarylane.fullname" . }}-selfsigned-issuer
+  namespace: {{ .Release.Namespace }}
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "cert-manager-webhook-binarylane.fullname" . }}-root-ca
+  namespace: {{ .Release.Namespace }}
+spec:
+  isCA: true
+  commonName: {{ include "cert-manager-webhook-binarylane.fullname" . }}-root-ca
+  secretName: {{ include "cert-manager-webhook-binarylane.fullname" . }}-root-ca
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: {{ include "cert-manager-webhook-binarylane.fullname" . }}-selfsigned-issuer
+    kind: Issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ include "cert-manager-webhook-binarylane.fullname" . }}-ca-issuer
+  namespace: {{ .Release.Namespace }}
+spec:
+  ca:
+    secretName: {{ include "cert-manager-webhook-binarylane.fullname" . }}-root-ca
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "cert-manager-webhook-binarylane.fullname" . }}-tls
+  namespace: {{ .Release.Namespace }}
+spec:
+  dnsNames:
+    - {{ include "cert-manager-webhook-binarylane.fullname" . }}
+    - {{ include "cert-manager-webhook-binarylane.fullname" . }}.{{ .Release.Namespace }}
+    - {{ include "cert-manager-webhook-binarylane.fullname" . }}.{{ .Release.Namespace }}.svc
+  issuerRef:
+    name: {{ include "cert-manager-webhook-binarylane.fullname" . }}-ca-issuer
+    kind: Issuer
+  secretName: {{ include "cert-manager-webhook-binarylane.fullname" . }}-tls

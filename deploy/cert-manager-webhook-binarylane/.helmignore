@@ -1,0 +1,8 @@
+# Patterns to exclude from Helm chart package
+.git/
+.gitignore
+.helmignore
+*.swp
+*.bak
+*.orig
+.DS_Store
