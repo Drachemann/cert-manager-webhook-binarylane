@@ -27,6 +27,8 @@ spec:
           env:
             - name: GROUP_NAME
               value: {{ .Values.groupName }}
+            - name: HEALTHZ_PORT
+              value: "6080"
           ports:
             - containerPort: 4443
               name: https
@@ -34,18 +36,20 @@ spec:
             - containerPort: 6080
               name: healthcheck
               protocol: TCP
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
           livenessProbe:
             httpGet:
               path: /healthz
               port: healthcheck
               scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /healthz
               port: healthcheck
               scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 5
           volumeMounts:
             - name: tls
               mountPath: /tls

@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -38,15 +38,15 @@ func serveHealthz(ctx context.Context, port string) {
 		w.Write([]byte("ok"))
 	})
 
-	addr := fmt.Sprintf(":%s", port)
-	srv := &http.Server{Addr: addr, Handler: mux}
+	srv := &http.Server{Addr: ":" + port, Handler: mux}
 
 	go func() {
 		<-ctx.Done()
 		srv.Shutdown(context.Background())
 	}()
 
+	log.Printf("starting health server on :%s", port)
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		fmt.Fprintf(os.Stderr, "healthz server error: %v\n", err)
+		log.Printf("health server error: %v", err)
 	}
 }
